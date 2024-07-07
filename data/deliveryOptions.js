@@ -13,3 +13,13 @@ export const deliveryOptions = [
     priceCents: 999
   }
 ];
+
+export function getDeliveryOption(deliveryOptionId) {
+  for(let i=0; i < deliveryOptions.length; i++) {
+    let option = deliveryOptions[i];
+    if (option.id === deliveryOptionId) {
+      return option;
+    }
+  }
+  return deliveryOptions[0];
+}
