@@ -1,5 +1,5 @@
 import { formatCurrency } from "./utils/money.js";
-import { cart, removeFromCart } from '../data/cart.js';
+import { cart, removeFromCart, updateDeliveryOption } from '../data/cart.js';
 import { findProduct } from "../data/products.js";
 import dayjs from 'https://unpkg.com/dayjs@1.11.10/esm/index.js';
 import {deliveryOptions} from '../data/deliveryOptions.js';
@@ -12,11 +12,26 @@ function generateOrderSummeryHTML(){
     let orderSummaryHTML = '';
     cart.forEach((cartItem) => {
       let matchingProduct = findProduct(cartItem.productId);
+
+      const deliveryOptionId = cartItem.deliveryOptionId;
+      let deliveryOption;
+      deliveryOptions.forEach((option) => {
+        if(option.id === deliveryOptionId) {
+          deliveryOption = option;
+        }
+      });
+      const today = dayjs();
+      const deliveryDate = today.add(
+        deliveryOption.deliveryDays,
+        'days'
+      );
+      const dateString = deliveryDate.format('dddd, MMMM D');
+      
       orderSummaryHTML += `
       <div class="cart-item-container 
         js-cart-item-container-${matchingProduct.id}">
           <div class="delivery-date">
-            Delivery date: Tuesday, June 21
+            Delivery date: ${dateString}
           </div>
 
           <div class="cart-item-details-grid">
@@ -66,10 +81,11 @@ function deliveryOptionsHTML(cartItem){
     );
     const dateString = deliveryDate.format('dddd, MMMM D');
     const priceString = deliveryOption.priceCents === 0 ? 'FREE' : `$${formatCurrency(deliveryOption.priceCents)}`;
-
     const isChecked = cartItem.deliveryOptionId === deliveryOption.id;
     html += `
-      <div class="delivery-option">
+      <div class="delivery-option js-delivery-option"
+        data-product-id="${cartItem.productId}"
+        data-delivery-option-id="${deliveryOption.id}">
         <input type="radio"
           ${isChecked ? 'checked' : ''}
           class="delivery-option-input"
@@ -99,3 +115,11 @@ function deleteCartItem(){
       });
     });
 }
+
+document.querySelectorAll('.js-delivery-option')
+  .forEach((element) => {
+    element.addEventListener('click', () => {
+      const {productId, deliveryOptionId} = element.dataset;
+      updateDeliveryOption(productId, deliveryOptionId);
+    });
+  });
