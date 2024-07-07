@@ -3,6 +3,7 @@ import { cart, removeFromCart, updateDeliveryOption } from '../../data/cart.js';
 import { findProduct } from "../../data/products.js";
 import dayjs from 'https://unpkg.com/dayjs@1.11.10/esm/index.js';
 import { deliveryOptions, getDeliveryOption } from '../../data/deliveryOptions.js';
+import { renderPaymentSummary } from "./paymentSummary.js";
 
 
 export function generateOrderSummaryHTML() {
@@ -106,6 +107,7 @@ export function attachEventListeners() {
           `.js-cart-item-container-${productId}`
         );
         container.remove();
+        renderPaymentSummary();
       });
     });
 
@@ -115,6 +117,7 @@ export function attachEventListeners() {
         const { productId, deliveryOptionId } = element.dataset;
         updateDeliveryOption(productId, deliveryOptionId);
         generateOrderSummaryHTML();
+        renderPaymentSummary();
         attachEventListeners(); // Re-attach the event listeners after updating the HTML
       });
     });
