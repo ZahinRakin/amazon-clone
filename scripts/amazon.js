@@ -1,5 +1,5 @@
 import { formatCurrency } from './utils/money.js';
-import { cart } from '../data/cart.js';
+import { cart, addToCart } from '../data/cart.js';
 import { products } from "../data/products.js";
 
 generateProductHTML();
@@ -79,20 +79,4 @@ function renderCartQuantity(){
   });
 
   document.querySelector('.js-cart-quantity').innerHTML = cartQuantity;
-}
-function addToCart(productId) {
-  let increment = false;
-  cart.forEach((item) => {
-    if (item.productId === productId && !increment) {
-      item.quantity++;
-      increment = true;
-    }
-  });
-
-  if (!increment) {
-    cart.push({
-      productId,
-      quantity: 1
-    });
-  }
 }
